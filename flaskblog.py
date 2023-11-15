@@ -1,10 +1,13 @@
 from flask import Flask, render_template, url_for, flash, request, redirect
+from flask_sqlalchemy import SQLAlchemy
 from forms import *
 
 # configuration
 app = Flask(__name__)
 app.config['SECRET_KEY'] = '964565dbc835b0ed7dbefe7248cffbcf'
-
+# database configuration
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///site.db'
+db = SQLAlchemy(app)
 
 # views/logic
 @app.route('/')
