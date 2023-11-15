@@ -1,5 +1,6 @@
 from flask import Flask, render_template, url_for, flash, request, redirect
 from flask_sqlalchemy import SQLAlchemy
+from datetime import datetime
 from forms import *
 
 # configuration
@@ -8,6 +9,24 @@ app.config['SECRET_KEY'] = '964565dbc835b0ed7dbefe7248cffbcf'
 # database configuration
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///site.db'
 db = SQLAlchemy(app)
+
+class User(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(100), nullable=False, unique=True)
+    email = db.Column(db.String(120), nullable=False, unique=True)
+    password = db.Column(db.String(120), nullable=False)
+
+    def __str__(self):
+        return f'{self.username}, {self.email}'
+    
+class Post(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(120), nullable=False, unique=True)
+    content = db.Column(db.Text, nullable=False)
+    date = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+
+    def __str__(self):
+        return f'Post({self.title}, {self.date})'
 
 # views/logic
 @app.route('/')
