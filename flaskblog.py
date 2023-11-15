@@ -8,7 +8,7 @@ app.config['SECRET_KEY'] = '964565dbc835b0ed7dbefe7248cffbcf'
 
 # views/logic
 @app.route('/')
-def hello():
+def home():
     return render_template('home.html', title='FlaskBlog')
 
 
@@ -40,9 +40,16 @@ def register():
     return render_template('register.html', form=form)
 
 
-@app.route('/login')
+@app.route('/login', methods=['GET','POST'])
 def login():
     form = LoginForm()
+    if form.validate_on_submit():
+        if form.username.data == 'aa':
+            flash(f'{form.username.data} has  logged in')
+            return redirect(url_for('home'))
+        else:
+            flash(f'Invalid credentials')
+        
     return render_template('login.html', form=form)
 
 
