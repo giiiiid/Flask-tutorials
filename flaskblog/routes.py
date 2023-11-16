@@ -1,45 +1,16 @@
-from flask import Flask, render_template, url_for, flash, request, redirect
-from flask_sqlalchemy import SQLAlchemy
-from datetime import datetime
-from forms import *
+from flask import render_template, url_for, flash, request, redirect
+from .models import User, Post
+from .forms import RegistrationForm, LoginForm
+from flaskblog import app
 
-# configuration
-app = Flask(__name__)
-app.config['SECRET_KEY'] = '964565dbc835b0ed7dbefe7248cffbcf'
-# database configuration
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///site.db'
-db = SQLAlchemy(app)
 
-class User(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(100), nullable=False, unique=True)
-    email = db.Column(db.String(120), nullable=False, unique=True)
-    password = db.Column(db.String(120), nullable=False)
-    posts = db.relationship('Post', backref='author', lazy=True)
-
-    def __repr__(self):
-        return f'User({self.username}, {self.email})'
-    
-class Post(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    title = db.Column(db.String(120), nullable=False, unique=True)
-    content = db.Column(db.Text, nullable=False)
-    date = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
-
-    def __repr__(self):
-        return f'Post({self.title}, {self.date})'
-
-# views/logic
 @app.route('/')
 def home():
     return render_template('home.html', title='FlaskBlog')
 
-
 @app.route('/about')
 def about():
     return render_template('about.html', title='About')
-
 
 @app.route('/register', methods=['GET','POST'])
 def register():
@@ -75,13 +46,3 @@ def login():
             flash(f'Invalid credentials')
         
     return render_template('login.html', form=form)
-
-
-
-
-
-
-if __name__ == '__main__':
-    with app.app_context():
-        db.create_all()
-        app.run(debug=True)
