@@ -17,17 +17,17 @@ class User(db.Model):
     password = db.Column(db.String(120), nullable=False)
     posts = db.relationship('Post', backref='author', lazy=True)
 
-    def __str__(self):
-        return f'{self.username}, {self.email}'
+    def __repr__(self):
+        return f'User({self.username}, {self.email})'
     
 class Post(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(120), nullable=False, unique=True)
     content = db.Column(db.Text, nullable=False)
-    date = db.Column(db.DateTime, nullable=False, default=datetime.date)
+    date = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
 
-    def __str__(self):
+    def __repr__(self):
         return f'Post({self.title}, {self.date})'
 
 # views/logic
@@ -82,4 +82,6 @@ def login():
 
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    with app.app_context():
+        db.create_all()
+        app.run(debug=True)
