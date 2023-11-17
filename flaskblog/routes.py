@@ -1,7 +1,7 @@
 from flask import render_template, url_for, flash, request, redirect
 from .models import User, Post
 from .forms import RegistrationForm, LoginForm
-from flaskblog import app
+from flaskblog import app, bcrypt, db
 
 
 @app.route('/')
@@ -30,7 +30,11 @@ def register():
         if form.password.data != form.confirm_password.data:
             flash('Passwords do not match')
         else:
-            flash(f'Account created for {form.username.data}!', 'success')
+            hashed_password = bcrypt.generate_password_hash(form.password.data).decode('utf-8')
+            user = User(username=form.username.data, email=form.email.data, password=hashed_password)
+            db.session.add(user)
+            db.session.commit()
+            flash(f'Your account has been created!', 'success')
             return redirect(url_for('login'))
     return render_template('register.html', form=form)
 
