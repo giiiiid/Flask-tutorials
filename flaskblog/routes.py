@@ -32,10 +32,12 @@ def register():
     #     else:
     #         flash(f'Passwords do not match!', 'error')
     form = RegistrationForm()
-
+    
     if form.validate_on_submit():
+        user_instance = User.query.filter_by(username=form.username.data)
+
         if form.password.data != form.confirm_password.data:
-            flash('Passwords do not match')
+            flash('Passwords do not match or username already exists')
         else:
             hashed_password = bcrypt.generate_password_hash(form.password.data).decode('utf-8')
             user = User(username=form.username.data, email=form.email.data, password=hashed_password)
@@ -43,7 +45,10 @@ def register():
             db.session.commit()
             flash(f'Your account has been created!', 'success')
             return redirect(url_for('login'))
-
+            
+    
+    users = User.query.all()
+    print(users)
     return render_template('register.html', form=form)
 
 
