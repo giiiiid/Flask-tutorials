@@ -16,41 +16,33 @@ def about():
 
 @app.route('/register', methods=['GET','POST'])
 def register():
-    # if current_user.is_authenticated:
-    #     return redirect(url_for('home'))
-
-    # form = RegistrationForm()
-    # if request.method == 'POST':
-    #     name = request.form['username']
-    #     email = request.form['email']
-    #     password = request.form['password']
-    #     confirm_password = request.form['confirm_password']
-
-    #     if password == confirm_password:
-    #         flash(f'Account created for {form.username.data}!', 'success')
-    #         return redirect(url_for('login'))
-    #     else:
-    #         flash(f'Passwords do not match!', 'error')
     form = RegistrationForm()
     
     if form.validate_on_submit():
         try:
+            uname = form.username.data
+            email = form.email.data
+            pwd = form.password.data
+            cpwd = form.confirm_password.data
 
-            if form.password.data != form.confirm_password.data:
+            if pwd != cpwd:
                 flash('Passwords do not match or username already exists')
+                
             else:
-                hashed_password = bcrypt.generate_password_hash(form.password.data).decode('utf-8')
-                user = User(username=form.username.data, email=form.email.data, password=hashed_password)
-                db.session.add(user)
+                new_user = User(
+                    username=uname,
+                    email=email,
+                    password=bcrypt.generate_password_hash(pwd)
+                )
+
+                db.session.add(new_user)
                 db.session.commit()
                 flash(f'Your account has been created!', 'success')
                 return redirect(url_for('login'))
 
         except Exception as e:
             flash(e, 'danger')
-            
-    users = User.query.all()
-    print(users)
+
     return render_template('register.html', form=form)
 
 
