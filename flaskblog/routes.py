@@ -34,19 +34,21 @@ def register():
     form = RegistrationForm()
     
     if form.validate_on_submit():
-        user_instance = User.query.filter_by(username=form.username.data)
+        try:
 
-        if form.password.data != form.confirm_password.data:
-            flash('Passwords do not match or username already exists')
-        else:
-            hashed_password = bcrypt.generate_password_hash(form.password.data).decode('utf-8')
-            user = User(username=form.username.data, email=form.email.data, password=hashed_password)
-            db.session.add(user)
-            db.session.commit()
-            flash(f'Your account has been created!', 'success')
-            return redirect(url_for('login'))
+            if form.password.data != form.confirm_password.data:
+                flash('Passwords do not match or username already exists')
+            else:
+                hashed_password = bcrypt.generate_password_hash(form.password.data).decode('utf-8')
+                user = User(username=form.username.data, email=form.email.data, password=hashed_password)
+                db.session.add(user)
+                db.session.commit()
+                flash(f'Your account has been created!', 'success')
+                return redirect(url_for('login'))
+
+        except Exception as e:
+            flash(e, 'danger')
             
-    
     users = User.query.all()
     print(users)
     return render_template('register.html', form=form)
@@ -57,18 +59,21 @@ def login():
     form = LoginForm()
 
     if form.validate_on_submit():
-        user = User.query.filter_by(username=form.username.data).first()
-        if user and bcrypt.check_password_hash(user.password, form.password.data):
-            login_user(user, remember=form.remember_me.data)
-            next_page = request.args.get('next')
-            # return redirect(next_page) if next_page else redirect(url_for('home'))
-            if next_page:
-                return redirect(next_page)
+        try:
+            user = User.query.filter_by(username=form.username.data).first()
+            if user and bcrypt.check_password_hash(user.password, form.password.data):
+                login_user(user, remember=form.remember_me.data)
+                next_page = request.args.get('next')
+                # return redirect(next_page) if next_page else redirect(url_for('home'))
+                if next_page:
+                    return redirect(next_page)
+                else:
+                    return redirect(url_for('home'))
             else:
-                return redirect(url_for('home'))
-        else:
-            flash(f'Invalid credentials')
+                flash(f'Invalid credentials', 'danger')
         
+        except Exception as e:
+            flash(e, 'danger')
     return render_template('login.html', form=form)
 
 @app.route('/logout')
