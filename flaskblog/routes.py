@@ -94,7 +94,7 @@ def save_picture(form_image):
     random_hex = secrets.token_hex(8)
     _, f_ext = os.path.splitext(form_image.filename)
     image_fn = random_hex + f_ext
-    image_path = os.path.join(app.root_path, 'static', image_fn)
+    image_path = os.path.join(app.root_path, 'static/propic', image_fn)
     form_image.save(image_path)
 
     return image_fn
@@ -103,15 +103,15 @@ def save_picture(form_image):
 @app.route('/account', methods=['POST', 'GET'])
 @login_required
 def account():
-    image_file = url_for('static', filename='profile.png' + current_user.image_file)
-
     form = UpdateAccountForms()
     if form.validate_on_submit():
         try:
             current_user.username = form.username.data
             current_user.email = form.email.data
-            if form.image:
-                current_user.image = form.image.data
+
+            if form.image.data:
+                new_image = save_picture(form.image.data)
+                current_user.image_file = save_picture(form.image.data)
 
             # update_user = User.query.update(username=current_user.username, email=current_user.email) throws an error(Exception)
             db.session.commit()
@@ -119,9 +119,11 @@ def account():
             return redirect(url_for('account'))
         except Exception:
             flash('Username or email already exists', 'danger')
+        
 
     elif request.method == 'GET':
         form.username.data = current_user.username
         form.email.data = current_user.email
+    image_file = url_for('static', filename='propic/' + current_user.image_file)
 
     return render_template('user-acc.html', image_file=image_file, form=form)
