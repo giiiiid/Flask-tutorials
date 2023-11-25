@@ -1,3 +1,5 @@
+import secrets
+import os
 from flask import render_template, url_for, flash, request, redirect, request
 from .models import User, Post
 from .forms import RegistrationForm, LoginForm, UpdateAccountForms
@@ -88,6 +90,16 @@ def logout():
     return redirect(url_for('home'))
 
 
+def save_picture(form_image):
+    random_hex = secrets.token_hex(8)
+    _, f_ext = os.path.splitext(form_image.filename)
+    image_fn = random_hex + f_ext
+    image_path = os.path.join(app.root_path, 'static', image_fn)
+    form_image.save(image_path)
+
+    return image_fn
+
+
 @app.route('/account', methods=['POST', 'GET'])
 @login_required
 def account():
@@ -98,6 +110,8 @@ def account():
         try:
             current_user.username = form.username.data
             current_user.email = form.email.data
+            if form.image:
+                current_user.image = form.image.data
 
             # update_user = User.query.update(username=current_user.username, email=current_user.email) throws an error(Exception)
             db.session.commit()
