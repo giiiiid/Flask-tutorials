@@ -18,8 +18,10 @@ def about():
 
 @app.route('/register', methods=['GET','POST'])
 def register():
+    if current_user.is_authenticated:
+        return redirect(url_for('home'))
+
     form = RegistrationForm()
-    
     if form.validate_on_submit():
         try:
             uname = form.username.data
@@ -44,18 +46,22 @@ def register():
 
         except Exception:
             flash(' Username already exists ', 'danger')
-   
+
     return render_template('register.html', form=form)
 
 
 @app.route('/login', methods=['GET','POST'])
 def login():
+    if current_user.is_authenticated:
+        return redirect('home')
+        
     form = LoginForm()
-
     if form.validate_on_submit():
         try:
             user = User.query.filter_by(username=form.username.data).first()
-            if user and bcrypt.check_password_hash(user.password, form.password.data):
+            hashed_pwd = bcrypt.check_password_hash(user.password, form.password.data)
+
+            if user and hashed_pwd:
                 login_user(user, remember=form.remember_me.data)
                 next_page = request.args.get('next')
                 # return redirect(next_page) if next_page else redirect(url_for('home'))
@@ -63,6 +69,7 @@ def login():
                     return redirect(next_page)
                 else:
                     return redirect(url_for('home'))
+
             else:
                 flash(f'Invalid credentials', 'danger')
         

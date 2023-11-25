@@ -1,6 +1,7 @@
 from flaskblog import db, login_user
 from datetime import datetime
-from flask_login import UserMixin
+from flask_login import UserMixin, LoginManager
+from flaskblog import app
 
 # Loading a user's id and logging it in
 @login_user.user_loader
