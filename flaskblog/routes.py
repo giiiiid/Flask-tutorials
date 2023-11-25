@@ -1,6 +1,6 @@
 from flask import render_template, url_for, flash, request, redirect, request
 from .models import User, Post
-from .forms import RegistrationForm, LoginForm
+from .forms import RegistrationForm, LoginForm, UpdateAccountForms
 from flaskblog import app, bcrypt, db, login_user
 from flask_login import login_user, logout_user, login_required, current_user
 
@@ -59,6 +59,7 @@ def login():
     if form.validate_on_submit():
         try:
             user = User.query.filter_by(username=form.username.data).first()
+            # yes_user = User.query.filter_by(username=form.username.data).exists()
             hashed_pwd = bcrypt.check_password_hash(user.password, form.password.data)
 
             if user and hashed_pwd:
@@ -69,6 +70,9 @@ def login():
                     return redirect(next_page)
                 else:
                     return redirect(url_for('home'))
+                    
+            elif None:
+                flash('Username does not exists', 'danger')
 
             else:
                 flash(f'Invalid credentials', 'danger')
@@ -84,8 +88,26 @@ def logout():
     return redirect(url_for('home'))
 
 
-@app.route('/account')
+@app.route('/account', methods=['POST', 'GET'])
 @login_required
 def account():
     image_file = url_for('static', filename='profile.png' + current_user.image_file)
-    return render_template('user-acc.html', image_file=image_file)
+
+    form = UpdateAccountForms()
+    if form.validate_on_submit():
+        try:
+            current_user.username = form.username.data
+            current_user.email = form.email.data
+
+            # update_user = User.query.update(username=current_user.username, email=current_user.email) throws an error(Exception)
+            db.session.commit()
+            flash('Your profile has successfully been updated', 'success')
+            return redirect(url_for('account'))
+        except Exception:
+            flash('Username or email already exists', 'danger')
+
+    elif request.method == 'GET':
+        form.username.data = current_user.username
+        form.email.data = current_user.email
+
+    return render_template('user-acc.html', image_file=image_file, form=form)
