@@ -42,8 +42,8 @@ def register():
                 flash(f'Your account has been created!', 'success')
                 return redirect(url_for('login'))
 
-        except Exception as e:
-            flash(' Username already exists ')
+        except Exception:
+            flash(' Username already exists ', 'danger')
    
     return render_template('register.html', form=form)
 
