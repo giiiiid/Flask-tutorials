@@ -10,9 +10,11 @@ from flask_login import login_user, logout_user, login_required, current_user
 def home():
     return render_template('home.html', title='FlaskBlog')
 
+
 @app.route('/about')
 def about():
     return render_template('about.html', title='About')
+
 
 @app.route('/register', methods=['GET','POST'])
 def register():
@@ -26,8 +28,8 @@ def register():
             cpwd = form.confirm_password.data
 
             if pwd != cpwd:
-                flash('Passwords do not match or username already exists')
-                
+                flash('Passwords do not match')
+
             else:
                 new_user = User(
                     username=uname,
@@ -41,8 +43,8 @@ def register():
                 return redirect(url_for('login'))
 
         except Exception as e:
-            flash(e, 'danger')
-
+            flash(' Username already exists ')
+   
     return render_template('register.html', form=form)
 
 
@@ -67,6 +69,7 @@ def login():
         except Exception as e:
             flash(e, 'danger')
     return render_template('login.html', form=form)
+
 
 @app.route('/logout')
 def logout():
