@@ -72,12 +72,11 @@ def login():
                     return redirect(next_page)
                 else:
                     return redirect(url_for('home'))
-            
             else:
                 flash(f'Invalid credentials', 'danger')
         
         except Exception as e:
-            flash('Username does not exist', 'danger')
+            flash('User does not exist', 'danger')
     return render_template('login.html', form=form)
 
 
@@ -122,6 +121,6 @@ def account():
     elif request.method == 'GET':
         form.username.data = current_user.username
         form.email.data = current_user.email
-        image_file = url_for('static', filename='propic/' + current_user.image_file)
+        image_file = url_for('static', filename=f'propic/{current_user.image_file}')
 
     return render_template('user-acc.html', image_file=image_file, form=form)
