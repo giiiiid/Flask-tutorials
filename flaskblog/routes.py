@@ -111,7 +111,8 @@ def account():
 
             if form.image.data:
                 new_image = save_picture(form.image.data)
-                current_user.image_file = save_picture(form.image.data)
+                current_user.image_file = new_image
+                image_file = url_for('static', filename='propic/' + current_user.image_file)
 
             # update_user = User.query.update(username=current_user.username, email=current_user.email) throws an error(Exception)
             db.session.commit()
