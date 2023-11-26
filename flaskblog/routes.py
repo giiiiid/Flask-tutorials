@@ -72,15 +72,12 @@ def login():
                     return redirect(next_page)
                 else:
                     return redirect(url_for('home'))
-                    
-            elif None:
-                flash('Username does not exists', 'danger')
-
+            
             else:
                 flash(f'Invalid credentials', 'danger')
         
         except Exception as e:
-            flash(e, 'danger')
+            flash('Username does not exist', 'danger')
     return render_template('login.html', form=form)
 
 
