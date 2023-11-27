@@ -153,3 +153,11 @@ def publish():
 def post(id):
     post = Post.query.get_or_404(id)
     return render_template('post.html', post=post)
+
+
+@app.route('/profile/<int:id>', methods=['GET'])
+def user_profile(id):
+    profile = User.query.get_or_404(id)
+    image_file = url_for('static', filename='propic/' + profile.image_file)
+    
+    return render_template('user-profile.html', profile=profile, image_file=image_file)
