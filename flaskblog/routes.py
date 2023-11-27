@@ -79,6 +79,8 @@ def login():
         
         except Exception as e:
             flash('User does not exist', 'danger')
+    users = User.query.all()
+    print(users)
     return render_template('login.html', form=form)
 
 
@@ -145,3 +147,9 @@ def publish():
         return redirect(url_for('home'))
 
     return render_template('publish.html', form=form)
+
+
+@app.route('/publish/<int:id>', methods=['GET'])
+def post(id):
+    post = Post.query.get_or_404(id)
+    return render_template('post.html', post=post)
