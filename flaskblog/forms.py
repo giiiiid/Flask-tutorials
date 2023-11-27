@@ -1,6 +1,6 @@
 from flask_wtf import FlaskForm
 from flask_wtf.file import FileField, FileAllowed
-from wtforms import StringField, PasswordField, EmailField, SubmitField, BooleanField, ValidationError
+from wtforms import StringField, PasswordField, EmailField, SubmitField, BooleanField, ValidationError, TextAreaField
 from wtforms.validators import DataRequired, Length, Email, EqualTo, ValidationError
 from flaskblog.models import User
 from flask_login import current_user
@@ -59,3 +59,9 @@ class UpdateAccountForms(FlaskForm):
             user_email = User.query.filter_by(email=email.data).first()
             if user_email:
                 raise ValidationError(' Email already exists ')
+
+
+class PublishForms(FlaskForm):
+    title = StringField('Title', validators=[DataRequired(), Length(min=2)])
+    content = TextAreaField('Content', validators=[DataRequired()])
+    submit = SubmitField('Publish')

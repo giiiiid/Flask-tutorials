@@ -3,7 +3,7 @@ import os
 from PIL import Image
 from flask import render_template, url_for, flash, request, redirect, request
 from .models import User, Post
-from .forms import RegistrationForm, LoginForm, UpdateAccountForms
+from .forms import RegistrationForm, LoginForm, UpdateAccountForms, PublishForms
 from flaskblog import app, bcrypt, db, login_user
 from flask_login import login_user, logout_user, login_required, current_user
 
@@ -11,7 +11,8 @@ from flask_login import login_user, logout_user, login_required, current_user
 @app.route('/')
 @login_required
 def home():
-    return render_template('home.html', title='FlaskBlog')
+    posts = Post.query.all()
+    return render_template('home.html', title='FlaskBlog', posts=posts)
 
 
 @app.route('/about')
@@ -130,3 +131,17 @@ def account():
         
     image_file = url_for('static', filename=f'propic/{current_user.image_file}')
     return render_template('user-acc.html', image_file=image_file, form=form)
+
+
+
+@app.route('/publish', methods=['POST', 'GET'])
+@login_required
+def publish():
+    form = PublishForms()
+    if form.validate_on_submit():
+        new_post = Post(title=form.title.data, content=form.content.data, author=current_user)
+        db.session.add(new_post)
+        db.session.commit()
+        return redirect(url_for('home'))
+
+    return render_template('publish.html', form=form)

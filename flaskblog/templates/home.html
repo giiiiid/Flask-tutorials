@@ -8,6 +8,11 @@
         </div>
         <h2><a class="article-title" href="#"></a></h2>
         <p class="article-content"></p>
+        {% for post in posts %}
+        {{post.title}}
+        {{post.content}} - {{post.date.strftime('%Y-%m-%d')}}
+        {{post.author.username}}
+        {% endfor %}
         </div>
     </article>
 {% endblock content %}
