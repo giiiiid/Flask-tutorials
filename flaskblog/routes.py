@@ -182,11 +182,11 @@ def update_post(id):
     return render_template('publish.html', legend='Update a Post', form=form)
 
 
-# @app.route('/ipublish/<int:id>/delete', methods=['GET', 'POST'])
-# def delete_post(id):
-#     post = Post.query.get_or_404(id)
-#     if request.method == 'POST':
-#         db.session.delete(post)
-#         db.session.commit()
-#         return redirect(url_for('home'))
-#     return render_template('delete-post.html', post=post)
+@app.route('/ipublish/<int:id>/delete', methods=['GET', 'POST'])
+def delete_post(id):
+    post = Post.query.get_or_404(id)
+    if request.method == 'POST':
+        db.session.delete(post)
+        db.session.commit()
+        return redirect(url_for('home'))
+    return render_template('delete-post.html', post=post)
