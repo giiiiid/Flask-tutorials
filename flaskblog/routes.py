@@ -135,6 +135,13 @@ def account():
     return render_template('user-acc.html', image_file=image_file, form=form)
 
 
+@app.route('/profile/<int:id>', methods=['GET'])
+@login_required
+def user_profile(id):
+    profile = User.query.get_or_404(id)
+    image_file = url_for('static', filename='propic/' + profile.image_file)
+    return render_template('user-profile.html', profile=profile, image_file=image_file)
+
 
 @app.route('/publish', methods=['POST', 'GET'])
 @login_required
@@ -156,19 +163,12 @@ def read_post(id):
     return render_template('read-post.html', post=post)
 
 
-@app.route('/profile/<int:id>', methods=['GET'])
-@login_required
-def user_profile(id):
-    profile = User.query.get_or_404(id)
-    image_file = url_for('static', filename='propic/' + profile.image_file)
-    return render_template('user-profile.html', profile=profile, image_file=image_file)
-
-
 @app.route('/publish/<int:id>/update', methods=['GET','POST'])
 def update_post(id):
     post = Post.query.get_or_404(id)
     if post.author != current_user:
         return redirect(url_for('read_post', id=post.id))
+
     form = PublishForms()
     if request.method == 'GET':
         form.title.data = post.title
@@ -178,6 +178,7 @@ def update_post(id):
         post.title = form.title.data
         post.content = form.content.data
         db.session.commit()
+        flash('Your post has been updated', 'success')
         return redirect(url_for('read_post', id=post.id))
     return render_template('publish.html', legend='Update a Post', form=form)
 
@@ -185,8 +186,13 @@ def update_post(id):
 @app.route('/ipublish/<int:id>/delete', methods=['GET', 'POST'])
 def delete_post(id):
     post = Post.query.get_or_404(id)
+    if post.author != current_user:
+        abort(403)
+        return redirect(url_for('read_post', id=post.id))
+
     if request.method == 'POST':
         db.session.delete(post)
         db.session.commit()
+        flash('Your post has been deleted', 'success')
         return redirect(url_for('home'))
     return render_template('delete-post.html', post=post)
