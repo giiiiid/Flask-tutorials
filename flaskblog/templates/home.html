@@ -7,8 +7,16 @@
             <div class="article-metadata">
                 <a class="mr-2" href="{{url_for('user_profile', id=post.author.id)}}">{{post.author.username}}</a>
                 <small class="text-muted">{{post.date.strftime('%Y-%m-%d')}}</small>
+                {% if post.author == current_user %}
+                <small>
+                    <a href="{{url_for('update_post', id=post.id)}}">Update</a>
+                </small>
+                <small>
+                    <a href="{{url_for('delete_post', id=post.id)}}">Delete</a>
+                </small>
+                {% endif %}
             </div>
-            <h2><a class="article-title" href="{{url_for('post', id=post.id)}}">{{post.title}}</a></h2>
+            <h2><a class="article-title" href="{{url_for('read_post', id=post.id)}}">{{post.title}}</a></h2>
             <p class="article-content">{{post.content}}</p>
         
             </div>

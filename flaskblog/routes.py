@@ -1,7 +1,7 @@
 import secrets
 import os
 from PIL import Image
-from flask import render_template, url_for, flash, request, redirect, request
+from flask import render_template, url_for, flash, request, redirect, request, abort
 from .models import User, Post
 from .forms import RegistrationForm, LoginForm, UpdateAccountForms, PublishForms
 from flaskblog import app, bcrypt, db, login_user
@@ -146,14 +146,14 @@ def publish():
         db.session.commit()
         return redirect(url_for('home'))
 
-    return render_template('publish.html', form=form)
+    return render_template('publish.html', form=form, legend='Publish a Post')
 
 
 @app.route('/publish/<int:id>', methods=['GET'])
 @login_required
-def post(id):
+def read_post(id):
     post = Post.query.get_or_404(id)
-    return render_template('post.html', post=post)
+    return render_template('read-post.html', post=post)
 
 
 @app.route('/profile/<int:id>', methods=['GET'])
@@ -161,5 +161,32 @@ def post(id):
 def user_profile(id):
     profile = User.query.get_or_404(id)
     image_file = url_for('static', filename='propic/' + profile.image_file)
-
     return render_template('user-profile.html', profile=profile, image_file=image_file)
+
+
+@app.route('/publish/<int:id>/update', methods=['GET','POST'])
+def update_post(id):
+    post = Post.query.get_or_404(id)
+    if post.author != current_user:
+        return redirect(url_for('read_post', id=post.id))
+    form = PublishForms()
+    if request.method == 'GET':
+        form.title.data = post.title
+        form.content.data = post.content
+
+    elif form.validate_on_submit():
+        post.title = form.title.data
+        post.content = form.content.data
+        db.session.commit()
+        return redirect(url_for('read_post', id=post.id))
+    return render_template('publish.html', legend='Update a Post', form=form)
+
+
+# @app.route('/ipublish/<int:id>/delete', methods=['GET', 'POST'])
+# def delete_post(id):
+#     post = Post.query.get_or_404(id)
+#     if request.method == 'POST':
+#         db.session.delete(post)
+#         db.session.commit()
+#         return redirect(url_for('home'))
+#     return render_template('delete-post.html', post=post)
