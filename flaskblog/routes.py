@@ -12,7 +12,7 @@ from flask_login import login_user, logout_user, login_required, current_user
 @login_required
 def home():
     page = request.args.get('page', 1, type=int)
-    posts = Post.query.paginate(page=page, per_page=2)
+    posts = Post.query.order_by(Post.date.desc()).paginate(page=page, per_page=2)
     return render_template('home.html', title='FlaskBlog', posts=posts)
 
 
