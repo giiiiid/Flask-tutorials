@@ -141,6 +141,7 @@ def account():
 def user_profile(id):
     profile = User.query.get_or_404(id)
     image_file = url_for('static', filename='propic/' + profile.image_file)
+    # posts = Post.query.filter_by(author=profile.username)
     return render_template('user-profile.html', profile=profile, image_file=image_file)
 
 
