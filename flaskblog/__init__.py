@@ -22,5 +22,5 @@ login_user.login_message_category = 'info'
 app.config['MAIL_SERVER'] = 'smtp.googlemail.com'
 app.config['MAIL_PORT'] = 587
 app.config['MAIL_USE_TLS'] = True
-
+mail = Mail(app)
 from . import routes

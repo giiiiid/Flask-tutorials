@@ -5,8 +5,9 @@ from flask import render_template, url_for, flash, request, redirect, request, a
 from .models import User, Post
 from .forms import (RegistrationForm, LoginForm, UpdateAccountForms, 
                     PublishForms, Request_ResetPassword_TokenForm, ResetPassword)
-from flaskblog import app, bcrypt, db, login_user
+from flaskblog import app, bcrypt, db, login_user, mail
 from flask_login import login_user, logout_user, login_required, current_user
+from flask_mail import Message
 
 
 @app.route('/')
@@ -200,6 +201,21 @@ def delete_post(id):
     return render_template('delete-post.html', post=post)
 
 
+def reset_send_email(user):
+    token = user.get_reset_token()
+    msg = Message(
+        subject='Password Reset request',
+        recipients=[user.email],
+        sender='noreply@gmail.com',
+    )
+    msg.body = f'''
+    To reset your password, visit the following link: 
+    {url_for('reset_pwd_token', token=token, _external=True)}
+
+    If you did not request to reset your password, kindly ignore this email.
+    '''
+    mail.send(msg)
+
 @app.route('/reset_password', methods=['GET','POST'])
 def request_reset_pwd_token():
     form = Request_ResetPassword_TokenForm()
@@ -207,6 +223,7 @@ def request_reset_pwd_token():
     #     return redirect(url_for('home'))
     if form.validate_on_submit():
         user = User.query.filter_by(email=form.email.data).first()
+        send_reset_email(user)
         if user is None:
             flash('Email does not exist', 'danger')
         # return redirect(url_for('reset_pwd_token'))

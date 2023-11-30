@@ -68,7 +68,7 @@ class PublishForms(FlaskForm):
 
 
 class Request_ResetPassword_TokenForm(FlaskForm):
-    email = EmailField('Email', validators=[DataRequired()])
+    email = StringField('Email', validators=[DataRequired()])
     submit = SubmitField('Send Email')
     def validate_email(self, email):
         user_email = User.query.filter_by(email=email).first()
