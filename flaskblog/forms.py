@@ -68,10 +68,10 @@ class PublishForms(FlaskForm):
 
 
 class Request_ResetPassword_TokenForm(FlaskForm):
-    email = StringField('Email', validators=[DataRequired()])
+    email = StringField('Email', validators=[DataRequired(), Email()])
     submit = SubmitField('Send Email')
     def validate_email(self, email):
-        user_email = User.query.filter_by(email=email).first()
+        user_email = User.query.filter_by(email=email.data).first()
         if not user_email:
             raise ValidationError('Email does not exist')
 

@@ -201,7 +201,7 @@ def delete_post(id):
     return render_template('delete-post.html', post=post)
 
 
-def reset_send_email(user):
+def send_reset_email(user):
     token = user.get_reset_token()
     msg = Message(
         subject='Password Reset request',
@@ -223,8 +223,10 @@ def request_reset_pwd_token():
     #     return redirect(url_for('home'))
     if form.validate_on_submit():
         user = User.query.filter_by(email=form.email.data).first()
-        send_reset_email(user)
-        if user is None:
+        if user:
+            flash('Check your email to reset your password','info')
+            # send_reset_email(user)
+        else:
             flash('Email does not exist', 'danger')
         # return redirect(url_for('reset_pwd_token'))
     return render_template('resetpwdtoken.html', form=form, legend='Reset Password')
