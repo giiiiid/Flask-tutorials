@@ -206,7 +206,10 @@ def request_reset_pwd_token():
     # if current_user.is_authenticated:
     #     return redirect(url_for('home'))
     if form.validate_on_submit():
-        return redirect(url_for('reset_pwd_token'))
+        user = User.query.filter_by(email=form.email.data).first()
+        if user is None:
+            flash('Email does not exist', 'danger')
+        # return redirect(url_for('reset_pwd_token'))
     return render_template('resetpwdtoken.html', form=form, legend='Reset Password')
 
 
@@ -224,7 +227,10 @@ def reset_pwd_token(token):
         if pwd != cpwd:
             flash('Passwords do not match', 'danger')
         else:
-            password = bcrypt.generate_password_hash(pwd)
-            db.session.commit(password)
-    
+            hashed_password = bcrypt.generate_password_hash(pwd)
+            user.password = hashed_password
+            db.session.commit()
+            flash('Your password has been updated', 'success')
+            return redirect(url_for('login'))
+
     return render_template('resetpwd.html', form=form, legend='Reset Password')
