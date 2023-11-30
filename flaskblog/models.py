@@ -24,13 +24,14 @@ class User(db.Model, UserMixin):
         return s.dumps({'user_id':self.id}).decode('utf-8')
 
 
+    @staticmethod
     def verify_token(token):
         s = Serializer(app.config['SECRET_KEY'])
         try:
-            return s.loads(token)['user_id']
+            user_id =  s.loads(token)['user_id']
         except:
             return None
-        return User.query.get('user_id')
+        return User.query.get(user_id)
 
 
     def __repr__(self):
