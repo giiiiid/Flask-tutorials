@@ -3,7 +3,8 @@ import os
 from PIL import Image
 from flask import render_template, url_for, flash, request, redirect, request, abort
 from .models import User, Post
-from .forms import RegistrationForm, LoginForm, UpdateAccountForms, PublishForms, ResetPasswordTokenForm
+from .forms import (RegistrationForm, LoginForm, UpdateAccountForms, 
+                    PublishForms, Request_ResetPassword_TokenForm, ResetPassword)
 from flaskblog import app, bcrypt, db, login_user
 from flask_login import login_user, logout_user, login_required, current_user
 
@@ -199,7 +200,31 @@ def delete_post(id):
     return render_template('delete-post.html', post=post)
 
 
-@app.route('/resetpassword', methods=['GET','POST'])
-def reset_pwd_token():
-    form = ResetPasswordTokenForm()
+@app.route('/reset_password', methods=['GET','POST'])
+def request_reset_pwd_token():
+    form = Request_ResetPassword_TokenForm()
+    # if current_user.is_authenticated:
+    #     return redirect(url_for('home'))
+    if form.validate_on_submit():
+        return redirect(url_for('reset_pwd_token'))
     return render_template('resetpwdtoken.html', form=form, legend='Reset Password')
+
+
+@app.route('/reset_password/<token>', methods=['GET','POST'])
+def reset_pwd_token(token):
+    user = User.verify_reset_token(token)
+    if user is None:
+        flash('Invalid or Expire token', 'warning')
+        return redirect(url_for('request_reset_pwd_token'))
+    form = ResetPassword()
+    if form.validate_on_submit():
+        pwd = form.password.data
+        cpwd = form.confirm_pwd.data
+
+        if pwd != cpwd:
+            flash('Passwords do not match', 'danger')
+        else:
+            password = bcrypt.generate_password_hash(pwd)
+            db.session.commit(password)
+    
+    return render_template('resetpwd.html', form=form, legend='Reset Password')

@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="content-section">
+    <form method="post">{{form.hidden_tag()}}
+        <fieldset class="form-group">
+        <legend class="border-bottom mb-4">{{legend}}</legend>
+        <div class="form-group">
+            {{ form.password.label(class="form-control-label") }}
+            {{form.password(class="form-control")}}
+
+            {{ form.confirm_pwd.label(class="form-control-label") }}
+            {{form.confirm_pwd(class="form-control")}}
+    </fieldset>
+        <div class="form-group">
+            {{ form.submit(class="btn btn-outline-info") }}
+        </div>
+    </form>
+
+</div>
+
+{% endblock content %}
