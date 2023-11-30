@@ -65,3 +65,12 @@ class PublishForms(FlaskForm):
     title = StringField('Title', validators=[DataRequired(), Length(min=2)])
     content = TextAreaField('Content', validators=[DataRequired()])
     submit = SubmitField('Publish')
+
+
+class ResetPasswordTokenForm(FlaskForm):
+    email = EmailField('Email', validators=[DataRequired()])
+    submit = SubmitField('Send Email')
+    def validate_email(self, email):
+        user_email = User.query.filter_by(email=email).first()
+        if not user_email:
+            raise ValidationError('Email does not exist')

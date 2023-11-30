@@ -3,7 +3,7 @@ import os
 from PIL import Image
 from flask import render_template, url_for, flash, request, redirect, request, abort
 from .models import User, Post
-from .forms import RegistrationForm, LoginForm, UpdateAccountForms, PublishForms
+from .forms import RegistrationForm, LoginForm, UpdateAccountForms, PublishForms, ResetPasswordTokenForm
 from flaskblog import app, bcrypt, db, login_user
 from flask_login import login_user, logout_user, login_required, current_user
 
@@ -197,3 +197,9 @@ def delete_post(id):
         flash('Your post has been deleted', 'success')
         return redirect(url_for('home'))
     return render_template('delete-post.html', post=post)
+
+
+@app.route('/resetpassword', methods=['GET','POST'])
+def reset_pwd_token():
+    form = ResetPasswordTokenForm()
+    return render_template('resetpwdtoken.html', form=form, legend='Reset Password')
