@@ -7,6 +7,7 @@
             <div class="article-metadata">
                 <a class="mr-2" href="{{url_for('users.user_profile', id=post.author.id)}}">{{post.author.username}}</a>
                 <small class="text-muted">{{post.date.strftime('%Y-%m-%d')}}</small>
+                
                 {% if post.author == current_user %}
                 <small>
                     <a href="{{url_for('posts.update_post', id=post.id)}}">Update</a>

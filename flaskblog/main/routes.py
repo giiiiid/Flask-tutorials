@@ -8,7 +8,7 @@ main = Blueprint('main', __name__)
 @login_required
 def home():
     page = request.args.get('page', 1, type=int)
-    posts = Post.query.order_by(Post.date.desc()).paginate(page=page, per_page=2)
+    posts = Post.query.order_by(Post.date.desc()).paginate(page=page, per_page=3)
     return render_template('home.html', title='FlaskBlog', posts=posts)
 
 
