@@ -1,9 +1,9 @@
 from flask_wtf import FlaskForm
-from flask_wtf.file import FileField, FileAllowed
-from wtforms import StringField, PasswordField, EmailField, SubmitField, BooleanField, ValidationError
-from wtforms.validators import DataRequired, Length, Email, EqualTo, ValidationError
 from flaskblog.models import User
 from flask_login import current_user
+from flask_wtf.file import FileField, FileAllowed
+from wtforms.validators import DataRequired, Length, Email, EqualTo, ValidationError
+from wtforms import StringField, PasswordField, EmailField, SubmitField, BooleanField
 
 
 class RegistrationForm(FlaskForm):

@@ -28,7 +28,7 @@ def send_reset_email(user):
     )
     msg.body = f'''
     To reset your password, visit the following link: 
-    {url_for('reset_pwd_token', token=token, _external=True)}
+    {url_for('users.reset_pwd_token', token=token, _external=True)}
 
     If you did not request to reset your password, kindly ignore this email.
     '''

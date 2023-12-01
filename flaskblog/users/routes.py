@@ -1,17 +1,18 @@
-from flask import Blueprint, redirect, render_template, request, flash, url_for
-from flask_login import login_required, current_user, logout_user, login_user
+from flaskblog.models import User
 from flaskblog import db, bcrypt, login_user
+from flaskblog.users.utils import save_picture, send_reset_email
+from flask_login import login_required, current_user, logout_user, login_user
 from flaskblog.users.forms import (RegistrationForm, LoginForm, UpdateAccountForms, 
                                    Request_ResetPassword_TokenForm, ResetPassword)
-from flaskblog.models import User
-from flaskblog.users.utils import save_picture, send_reset_email
+from flask import Blueprint, redirect, render_template, request, flash, url_for
+
 users = Blueprint('users', __name__)
 
 
 @users.route('/register', methods=['GET','POST'])
 def register():
     if current_user.is_authenticated:
-        return redirect(url_for('home'))
+        return redirect(url_for('main.home'))
 
     form = RegistrationForm()
     if form.validate_on_submit():
@@ -34,7 +35,7 @@ def register():
                 db.session.add(new_user)
                 db.session.commit()
                 flash(f'Your account has been created!', 'success')
-                return redirect(url_for('login'))
+                return redirect(url_for('users.login'))
 
         except Exception:
             flash(' Username already exists ', 'danger')
@@ -61,7 +62,7 @@ def login():
                 if next_page:
                     return redirect(next_page)
                 else:
-                    return redirect(url_for('home'))
+                    return redirect(url_for('main.home'))
             else:
                 flash(f'Invalid credentials', 'danger')
         
@@ -75,7 +76,7 @@ def login():
 @users.route('/logout')
 def logout():
     logout_user()
-    return redirect(url_for('home'))
+    return redirect(url_for('main.home'))
 
 
 
@@ -96,7 +97,7 @@ def account():
             # update_user = User.query.update(username=current_user.username, email=current_user.email) throws an error(Exception)
             db.session.commit()
             flash('Your profile has successfully been updated', 'success')
-            return redirect(url_for('account'))
+            return redirect(url_for('users.account'))
         except Exception:
             flash('Username or email already exists', 'danger')
         
@@ -139,7 +140,7 @@ def reset_pwd_token(token):
     user = User.verify_reset_token(token)
     if user is None:
         flash('Invalid or Expire token', 'warning')
-        return redirect(url_for('request_reset_pwd_token'))
+        return redirect(url_for('users.request_reset_pwd_token'))
     form = ResetPassword()
     if form.validate_on_submit():
         pwd = form.password.data
@@ -152,6 +153,6 @@ def reset_pwd_token(token):
             user.password = hashed_password
             db.session.commit()
             flash('Your password has been updated', 'success')
-            return redirect(url_for('login'))
+            return redirect(url_for('users.login'))
 
     return render_template('resetpwd.html', form=form, legend='Reset Password')

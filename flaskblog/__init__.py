@@ -15,7 +15,7 @@ db = SQLAlchemy(app)
 # authentication configuration
 bcrypt = Bcrypt(app)
 login_user = LoginManager(app)
-login_user.login_view = 'login'
+login_user.login_view = 'users.login'
 login_user.login_message_category = 'info'
 
 # mail configuration
@@ -23,4 +23,11 @@ app.config['MAIL_SERVER'] = 'smtp.googlemail.com'
 app.config['MAIL_PORT'] = 587
 app.config['MAIL_USE_TLS'] = True
 mail = Mail(app)
-from . import routes
+
+from flaskblog.users.routes import users
+from flaskblog.posts.routes import posts
+from flaskblog.main.routes import main
+
+app.register_blueprint(users)
+app.register_blueprint(posts)
+app.register_blueprint(main)
