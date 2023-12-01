@@ -1,15 +1,16 @@
 import os
 import secrets
 from PIL import Image
+from flask import current_app
 from flask_mail import Message
-from flaskblog import mail, app
+from flaskblog import mail
 
 
 def save_picture(form_image):
     random_hex = secrets.token_hex(8)
     _, f_ext = os.path.splitext(form_image.filename)
     image_fn = random_hex + f_ext
-    image_path = os.path.join(app.root_path, 'static/propic', image_fn)
+    image_path = os.path.join(current_app.root_path, 'static/propic', image_fn)
 
     output_size = (125, 125)
     i = Image.open(form_image)
