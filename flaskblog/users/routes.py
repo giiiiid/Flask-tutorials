@@ -94,7 +94,6 @@ def account():
                 current_user.image_file = new_image
                 image_file = url_for('static', filename='propic/' + current_user.image_file)
 
-            # update_user = User.query.update(username=current_user.username, email=current_user.email) throws an error(Exception)
             db.session.commit()
             flash('Your profile has successfully been updated', 'success')
             return redirect(url_for('users.account'))
