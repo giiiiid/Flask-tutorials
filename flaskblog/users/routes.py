@@ -52,7 +52,6 @@ def login():
     if form.validate_on_submit():
         try:
             user = User.query.filter_by(username=form.username.data).first()
-            # yes_user = User.query.filter_by(username=form.username.data).exists()
             hashed_pwd = bcrypt.check_password_hash(user.password, form.password.data)
 
             if user and hashed_pwd:
