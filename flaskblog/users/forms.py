@@ -29,16 +29,6 @@ class LoginForm(FlaskForm):
     password = PasswordField('Password', validators=[DataRequired(), Length(min=2, max=8)])
     remember_me = BooleanField('Remember Me')
     submit = SubmitField('Login')
-
-    # def validate_username(self, username):
-    #     uname = User.query.filter_by(username=username.data).exists()
-    #     if not uname:
-    #         raise ValidationError('Username does not exist')
-        
-    # def validate_email(self, email):
-    #     pwd = User.query.filter_by(password=password.data).exists()
-    #     if not pwd:
-    #         raise ValidationError('Incorrect password')
                     
 
 class UpdateAccountForms(FlaskForm):
